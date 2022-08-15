@@ -39,7 +39,7 @@ def country_year_list(df):
     country.sort()
     country.insert(0, 'Overall')
 
-    return years,country
+    return years, country
 
 def data_over_time(df,col):
 
@@ -59,7 +59,7 @@ def most_successful(df, sport):
     x.rename(columns={'index': 'Name', 'Name_x': 'Medals'}, inplace=True)
     return x
 
-def yearwise_medal_tally(df,country):
+def yearwise_medal_tally(df, country):
     temp_df = df.dropna(subset=['Medal'])
     temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
 
@@ -68,7 +68,7 @@ def yearwise_medal_tally(df,country):
 
     return final_df
 
-def country_event_heatmap(df,country):
+def country_event_heatmap(df, country):
     temp_df = df.dropna(subset=['Medal'])
     temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
 
@@ -109,3 +109,6 @@ def men_vs_women(df):
     final.fillna(0, inplace=True)
 
     return final
+
+def fetch_prediction(df1, df2):
+    return df1, df2

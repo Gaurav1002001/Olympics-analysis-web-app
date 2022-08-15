@@ -10,21 +10,24 @@ import preprocessor
 
 df = pd.read_csv('athlete_events.csv')
 region_df = pd.read_csv('noc_regions.csv')
+prediction_df = pd.read_csv('final_prediction.csv')
+linear_predict = pd.read_csv('linear_regression.csv')
+random_predict = pd.read_csv('random_forest.csv')
 
-df = preprocessor.preprocess(df,region_df)
+df = preprocessor.preprocess(df, region_df)
 
 st.sidebar.markdown("<h1 style='text-align: center;'>Olympics Analysis</h1>", unsafe_allow_html=True)
 st.sidebar.image('https://firebasestorage.googleapis.com/v0/b/myfitmeapp-e940b.appspot.com/o/Olympics-Emblem.png?alt=media&token=5eebb0c7-5d17-4037-90ea-7af956cb7e3a')
 user_menu = st.sidebar.radio(
     'Select an Option',
-    ('Medal Tally','Overall Analysis','Country-wise Analysis','Athlete wise Analysis')
+    ('Medal Tally','Overall Analysis','Country-wise Analysis','Athlete wise Analysis','Predicted-Medals')
 )
 
 if user_menu == 'Medal Tally':
     st.sidebar.header("Medal Tally")
     years, country = helper.country_year_list(df)
 
-    selected_year = st.sidebar.selectbox("Select Year",years)
+    selected_year = st.sidebar.selectbox("Select Year", years)
     selected_country = st.sidebar.selectbox("Select Country", country)
 
     medal_tally = helper.fetch_medal_tally(df, selected_year, selected_country)
@@ -102,11 +105,10 @@ if user_menu == 'Overall Analysis':
 if user_menu == 'Country-wise Analysis':
 
     st.sidebar.title('Country-wise Analysis')
-
     country_list = df['region'].dropna().unique().tolist()
     country_list.sort()
 
-    selected_country = st.sidebar.selectbox('Select a Country',country_list)
+    selected_country = st.sidebar.selectbox('Select a Country', country_list)
 
     country_df = helper.yearwise_medal_tally(df,selected_country)
     fig = px.line(country_df, x="Year", y="Medal")
@@ -147,6 +149,7 @@ if user_menu == 'Athlete wise Analysis':
                      'Volleyball', 'Synchronized Swimming', 'Table Tennis', 'Baseball',
                      'Rhythmic Gymnastics', 'Rugby Sevens',
                      'Beach Volleyball', 'Triathlon', 'Rugby', 'Polo', 'Ice Hockey']
+
     for sport in famous_sports:
         temp_df = athlete_df[athlete_df['Sport'] == sport]
         x.append(temp_df[temp_df['Medal'] == 'Gold']['Age'].dropna())
@@ -176,6 +179,20 @@ if user_menu == 'Athlete wise Analysis':
 
 # end of Athlete Wise Analysis
 
+if user_menu == 'Predicted-Medals':
+    linear_medal_tally, random_medal_tally = helper.fetch_prediction(linear_predict, random_predict)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.title('Linear-Regression-Model')
+        st.table(linear_medal_tally)
+
+    with col2:
+        st.title('Random-Forest-Model')
+        st.table(random_medal_tally)
+
+
+
 # begin of Prediction
 
     # Variables for prediction :
@@ -189,3 +206,4 @@ if user_menu == 'Athlete wise Analysis':
     # with a strong positive effect on a country’s medal count ( in the Olympics before and after hosting, as well as at the Games hosted).
     #
     # 4. Countries that have higher female participation in elite sports also tend to win more medals.
+
